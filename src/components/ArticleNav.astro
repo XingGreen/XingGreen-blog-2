@@ -1,0 +1,108 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const allPosts = await getCollection('blog');
+const posts = allPosts
+  .filter(post => post.data.published !== false)
+  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+
+const currentPost = allPosts.find(post => post.slug === slug);
+---
+
+<aside class="article-nav-sidebar">
+  <div class="nav-card glass-card">
+    <h4 class="card-title">文章目录</h4>
+    <ul class="article-nav-list">
+      {posts.map(post => (
+        <li class={post.slug === slug ? 'active' : ''}>
+          <a href={`/blog/${post.slug}`}>
+            <span class="nav-title">{post.data.title}</span>
+            <span class="nav-date">{post.data.date.toLocaleDateString('zh-CN')}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</aside>
+
+<style>
+  .article-nav-sidebar {
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+
+  .nav-card {
+    padding: 20px;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--mint-green);
+  }
+
+  .article-nav-list {
+    list-style: none;
+  }
+
+  .article-nav-list li {
+    margin-bottom: 8px;
+  }
+
+  .article-nav-list a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+
+  .article-nav-list a:hover {
+    background: rgba(152, 255, 152, 0.1);
+  }
+
+  .article-nav-list li.active a {
+    background: rgba(152, 255, 152, 0.2);
+    border-left: 3px solid var(--mint-green);
+  }
+
+  .nav-title {
+    display: block;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .nav-date {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 1024px) {
+    .article-nav-sidebar {
+      position: static;
+      max-height: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .nav-card {
+      padding: 16px;
+    }
+
+    .nav-title {
+      font-size: 0.85rem;
+    }
+  }
+</style>

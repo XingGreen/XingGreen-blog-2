@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import LeftSidebar from '../components/LeftSidebar.astro';
+import RightSidebar from '../components/RightSidebar.astro';
+import ArticlesList from '../components/ArticlesList.astro';
+
+const currentPage = Astro.url.pathname;
+---
+
+<Layout title="XingGreen's blog - 首页">
+  <Navbar />
+
+  <Hero />
+
+  <main class="main-content">
+    <div class="content-wrapper">
+      <LeftSidebar />
+      
+      <div class="center-content">
+        <ArticlesList />
+      </div>
+      
+      <RightSidebar />
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .main-content {
+    min-height: 100vh;
+    padding-top: 60px;
+  }
+
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .center-content {
+    min-width: 0;
+  }
+
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .center-content {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .content-wrapper {
+      padding: 20px 4%;
+    }
+  }
+</style>

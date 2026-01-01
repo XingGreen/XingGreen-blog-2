@@ -1,0 +1,196 @@
+---
+const currentPage = Astro.url.pathname;
+---
+
+<nav class="navbar glass-card">
+  <div class="nav-container">
+    <a href="/" class="nav-logo">
+      <span>XingGreen</span>
+    </a>
+    
+    <div class="nav-links">
+      <a href="/" class={currentPage === '/' ? 'active' : ''}>首页</a>
+      <a href="/archive" class={currentPage === '/archive' ? 'active' : ''}>归档</a>
+      <a href="/friends" class={currentPage === '/friends' ? 'active' : ''}>友链</a>
+      <a href="/console" class={currentPage === '/console' ? 'active' : ''}>控制台</a>
+      <a href="/contact" class={currentPage === '/contact' ? 'active' : ''}>联系我</a>
+    </div>
+    
+    <div class="nav-actions">
+      <button id="music-toggle" class="icon-btn" aria-label="播放音乐">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18V5l12-2v13"></path>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+      </button>
+      
+      <button id="theme-toggle" class="icon-btn" aria-label="切换主题">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <audio id="bg-music" loop>
+    <source src="/music/riverflowsinyou.mp3" type="audio/mpeg">
+  </audio>
+</nav>
+
+<style>
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 12px 0;
+  }
+
+  body.light-mode .navbar {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+  }
+  
+  .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .nav-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--forest-light);
+  }
+
+  body.light-mode .nav-logo {
+    color: white;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .nav-links a {
+    color: var(--text-primary);
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  body.light-mode .nav-links a {
+    color: white;
+  }
+  
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: var(--mint-green);
+    background: rgba(152, 255, 152, 0.1);
+  }
+
+  body.light-mode .nav-links a:hover,
+  body.light-mode .nav-links a.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .nav-actions {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--mint-green);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  body.light-mode .icon-btn {
+    border-color: white;
+    color: white;
+  }
+  
+  .icon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(152, 255, 152, 0.3);
+  }
+  
+  .sun-icon,
+  .moon-icon {
+    display: none;
+  }
+  
+  [data-theme='light'] .sun-icon {
+    display: block;
+  }
+  
+  [data-theme='dark'] .moon-icon {
+    display: block;
+  }
+  
+  @media (max-width: 768px) {
+    .nav-container {
+      padding: 0 4%;
+    }
+    
+    .nav-links {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const musicToggle = document.getElementById('music-toggle');
+  const bgMusic = document.getElementById('bg-music');
+  let isPlaying = false;
+  
+  musicToggle.addEventListener('click', () => {
+    if (isPlaying) {
+      bgMusic.pause();
+      musicToggle.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18V5l12-2v13"></path>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+      `;
+    } else {
+      bgMusic.play();
+      musicToggle.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="6" y="4" width="4" height="16"></rect>
+          <rect x="14" y="4" width="4" height="16"></rect>
+        </svg>
+      `;
+    }
+    isPlaying = !isPlaying;
+  });
+</script>

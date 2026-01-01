@@ -1,0 +1,163 @@
+---
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const posts = allPosts
+  .filter(post => post.data.published !== false)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 10);
+---
+
+<section class="articles-section">
+  <div class="section-header">
+    <h2 class="section-title">最新文章</h2>
+  </div>
+
+  <div class="articles-list">
+    {posts.map((post) => (
+      <article class="article-card glass-card scroll-reveal">
+        <div class="article-header">
+          <h3 class="article-title">
+            <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+          </h3>
+          <div class="article-meta">
+            <span class="article-date">
+              {post.data.date.toLocaleDateString('zh-CN')}
+            </span>
+            {post.data.category && (
+              <span class="article-category">
+                <a href={`/category/${post.data.category}`}>{post.data.category}</a>
+              </span>
+            )}
+          </div>
+        </div>
+
+        {post.data.description && (
+          <p class="article-excerpt">{post.data.description}</p>
+        )}
+
+        {post.data.tags && post.data.tags.length > 0 && (
+          <div class="article-tags">
+            {post.data.tags.map(tag => (
+              <a href={`/tag/${tag}`} class="tag">{tag}</a>
+            ))}
+          </div>
+        )}
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .articles-section {
+    padding: 20px;
+  }
+
+  .section-header {
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--mint-green);
+  }
+
+  .articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .article-card {
+    padding: 24px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .article-header {
+    margin-bottom: 12px;
+  }
+
+  .article-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .article-title a {
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+  }
+
+  .article-title a:hover {
+    color: var(--mint-green);
+  }
+
+  .article-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .article-category a {
+    color: var(--forest-light);
+    transition: color 0.3s ease;
+  }
+
+  .article-category a:hover {
+    color: var(--mint-green);
+  }
+
+  .article-excerpt {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .article-tags .tag {
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    background: rgba(152, 255, 152, 0.1);
+    border: 1px solid var(--mint-green);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .article-tags .tag:hover {
+    background: var(--mint-green);
+    color: var(--forest-dark);
+  }
+
+  @media (max-width: 768px) {
+    .articles-section {
+      padding: 16px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+    }
+
+    .article-card {
+      padding: 20px;
+    }
+
+    .article-title {
+      font-size: 1.2rem;
+    }
+  }
+</style>

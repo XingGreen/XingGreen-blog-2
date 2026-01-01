@@ -1,0 +1,337 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import LeftSidebar from '../../components/LeftSidebar.astro';
+import RightSidebar from '../../components/RightSidebar.astro';
+---
+
+<Layout title="新建文章 - XingGreen's blog">
+  <Navbar />
+
+  <main class="main-content">
+    <div class="content-wrapper">
+      <LeftSidebar />
+      
+      <div class="center-content">
+        <section class="editor-section">
+          <h1 class="section-title">新建文章</h1>
+          
+          <div class="editor-container glass-card scroll-reveal">
+            <form id="article-form" class="article-form">
+              <div class="form-group">
+                <label for="title">文章标题 *</label>
+                <input 
+                  type="text" 
+                  id="title" 
+                  name="title" 
+                  required 
+                  placeholder="请输入文章标题"
+                />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="category">分类</label>
+                  <input 
+                    type="text" 
+                    id="category" 
+                    name="category" 
+                    placeholder="例如：技术"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="date">发布日期</label>
+                  <input 
+                    type="date" 
+                    id="date" 
+                    name="date" 
+                    value={new Date().toISOString().split('T')[0]}
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="description">文章描述</label>
+                <input 
+                  type="text" 
+                  id="description" 
+                  name="description" 
+                  placeholder="简短描述文章内容"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="tags">标签（用逗号分隔）</label>
+                <input 
+                  type="text" 
+                  id="tags" 
+                  name="tags" 
+                  placeholder="例如：Astro, 前端, JavaScript"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="image">封面图片URL</label>
+                <input 
+                  type="url" 
+                  id="image" 
+                  name="image" 
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="content">文章内容（Markdown） *</label>
+                <textarea 
+                  id="content" 
+                  name="content" 
+                  rows="20" 
+                  required 
+                  placeholder="请输入文章内容，支持Markdown格式"
+                ></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">发布文章</button>
+                <button type="button" class="btn btn-secondary" id="save-draft">保存草稿</button>
+                <a href="/console" class="btn btn-secondary">取消</a>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+      
+      <RightSidebar />
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .main-content {
+    min-height: 100vh;
+    padding-top: 60px;
+  }
+
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .center-content {
+    min-width: 0;
+  }
+
+  .editor-section {
+    padding: 20px;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 32px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--mint-green);
+  }
+
+  .editor-container {
+    padding: 32px;
+  }
+
+  .article-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .form-group label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    padding: 12px 16px;
+    border: 2px solid var(--mint-green);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    box-shadow: 0 0 0 3px rgba(152, 255, 152, 0.2);
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: var(--text-secondary);
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    font-family: 'Consolas', 'Monaco', monospace;
+    line-height: 1.6;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .btn-primary {
+    background: var(--mint-green);
+    color: var(--forest-dark);
+  }
+
+  .btn-primary:hover {
+    background: var(--mint-accent);
+  }
+
+  .btn-secondary {
+    background: transparent;
+  }
+
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .center-content {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .content-wrapper {
+      padding: 20px 4%;
+    }
+
+    .editor-section {
+      padding: 16px;
+    }
+
+    .editor-container {
+      padding: 24px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  const articleForm = document.getElementById('article-form');
+  const saveDraftBtn = document.getElementById('save-draft');
+
+  articleForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(articleForm);
+    const data = {
+      title: formData.get('title'),
+      category: formData.get('category'),
+      date: formData.get('date'),
+      description: formData.get('description'),
+      tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
+      image: formData.get('image'),
+      content: formData.get('content'),
+      published: true
+    };
+
+    try {
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('文章发布成功！');
+        window.location.href = '/console';
+      } else {
+        alert('发布失败：' + result.message);
+      }
+    } catch (error) {
+      alert('网络错误，请稍后重试');
+    }
+  });
+
+  saveDraftBtn.addEventListener('click', async () => {
+    const formData = new FormData(articleForm);
+    const data = {
+      title: formData.get('title') || '未命名草稿',
+      category: formData.get('category'),
+      date: formData.get('date'),
+      description: formData.get('description'),
+      tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
+      image: formData.get('image'),
+      content: formData.get('content'),
+      published: false
+    };
+
+    try {
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('草稿保存成功！');
+        window.location.href = '/console';
+      } else {
+        alert('保存失败：' + result.message);
+      }
+    } catch (error) {
+      alert('网络错误，请稍后重试');
+    }
+  });
+</script>

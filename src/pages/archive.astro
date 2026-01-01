@@ -1,0 +1,303 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import LeftSidebar from '../components/LeftSidebar.astro';
+import RightSidebar from '../components/RightSidebar.astro';
+
+const allPosts = await getCollection('blog');
+const posts = allPosts
+  .filter(post => post.data.published !== false)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const groupedByYear = posts.reduce((acc, post) => {
+  const year = post.data.date.getFullYear();
+  if (!acc[year]) {
+    acc[year] = [];
+  }
+  acc[year].push(post);
+  return acc;
+}, {} as Record<number, typeof posts>);
+
+const sortedYears = Object.keys(groupedByYear).sort((a, b) => Number(b) - Number(a));
+---
+
+<Layout title="归档 - XingGreen's blog">
+  <Navbar />
+
+  <main class="main-content">
+    <div class="content-wrapper">
+      <LeftSidebar />
+      
+      <div class="center-content">
+        <section class="archive-section">
+          <h1 class="section-title">文章归档</h1>
+          
+          <div class="timeline">
+            {sortedYears.map(year => (
+              <div class="timeline-year">
+                <button class="year-toggle" data-year={year}>
+                  <span class="year-icon">▶</span>
+                  <span class="year-text">{year}年</span>
+                  <span class="year-count">({groupedByYear[year].length}篇)</span>
+                </button>
+                
+                <div class="year-posts" data-year={year}>
+                  {groupedByYear[year].map(post => (
+                    <div class="timeline-item">
+                      <div class="timeline-date">
+                        {post.data.date.toLocaleDateString('zh-CN')}
+                      </div>
+                      <div class="timeline-content">
+                        <a href={`/blog/${post.slug}`} class="timeline-title">
+                          {post.data.title}
+                        </a>
+                        {post.data.description && (
+                          <p class="timeline-excerpt">{post.data.description}</p>
+                        )}
+                        {post.data.tags && post.data.tags.length > 0 && (
+                          <div class="timeline-tags">
+                            {post.data.tags.map(tag => (
+                              <span class="tag">{tag}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+      
+      <RightSidebar />
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .main-content {
+    min-height: 100vh;
+    padding-top: 60px;
+  }
+
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .center-content {
+    min-width: 0;
+  }
+
+  .archive-section {
+    padding: 20px;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 32px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--mint-green);
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--mint-green);
+  }
+
+  .timeline-year {
+    margin-bottom: 24px;
+  }
+
+  .year-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+  }
+
+  .year-toggle:hover {
+    background: rgba(152, 255, 152, 0.1);
+  }
+
+  .year-icon {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+  }
+
+  .year-toggle.active .year-icon {
+    transform: rotate(90deg);
+  }
+
+  .year-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .year-count {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-left: auto;
+  }
+
+  .year-posts {
+    display: none;
+    padding-left: 20px;
+  }
+
+  .year-posts.active {
+    display: block;
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: 16px 0 16px 24px;
+    margin-bottom: 16px;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 24px;
+    width: 12px;
+    height: 12px;
+    background: var(--mint-green);
+    border-radius: 50%;
+    border: 2px solid var(--glass-bg);
+  }
+
+  .timeline-date {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .timeline-content {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .timeline-content:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .timeline-title {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+  }
+
+  .timeline-title:hover {
+    color: var(--mint-green);
+  }
+
+  .timeline-excerpt {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .timeline-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .timeline-tags .tag {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    background: rgba(152, 255, 152, 0.1);
+    border: 1px solid var(--mint-green);
+    border-radius: 20px;
+  }
+
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .center-content {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .content-wrapper {
+      padding: 20px 4%;
+    }
+
+    .archive-section {
+      padding: 16px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+    }
+
+    .timeline {
+      padding-left: 10px;
+    }
+
+    .timeline-item {
+      padding-left: 16px;
+    }
+
+    .timeline-item::before {
+      left: -10px;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.year-toggle').forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      const year = toggle.dataset.year;
+      const posts = document.querySelector(`.year-posts[data-year="${year}"]`);
+      
+      toggle.classList.toggle('active');
+      posts.classList.toggle('active');
+    });
+  });
+</script>
